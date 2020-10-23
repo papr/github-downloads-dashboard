@@ -2,7 +2,11 @@
 
 name: Update Dashboard
 
-on: [push, workflow_dispatch]  
+on:
+  workflow_dispatch:
+  schedule:
+    # Run at 08:00 am every day
+    - cron:  '0 8 * * *'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
