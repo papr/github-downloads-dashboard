@@ -2,5 +2,6 @@ packaging
 github-download-count
 pandas
 pyarrow
+matplotlib
 seaborn
 click

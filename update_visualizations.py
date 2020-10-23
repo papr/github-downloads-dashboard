@@ -2,6 +2,7 @@ import packaging.version
 import pathlib
 
 import click
+import matplotlib.dates as mdates
 import pandas as pd
 import seaborn as sns
 
@@ -50,7 +51,8 @@ def _render_vis(stats_loc, output_dir):
         col_order=col_order,
         col_wrap=5,
     )
-    
+    _set_date_formatter(fg)
+
     vis_dir = pathlib.Path(output_dir)
     vis_dir.mkdir(exist_ok=True)
     vis_loc = vis_dir / stats_loc.with_suffix(".png").name
@@ -60,6 +62,14 @@ def _extract_major_minor_version(version):
     version = packaging.version.parse(version)
     version = packaging.version.parse(f"{version.major}.{version.minor}")
     return version
+
+def _set_date_formatter(facet_grid):
+    for ax in facet_grid.axes:
+        if ax.get_xlabel():
+            #set ticks every week
+            ax.xaxis.set_major_locator(mdates.WeekdayLocator())
+            #set major ticks format
+            ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
 
     
 if __name__ == '__main__':
