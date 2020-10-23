@@ -1,3 +1,4 @@
+import packaging.version
 import pathlib
 
 import click
@@ -30,7 +31,7 @@ def _render_vis(stats_loc, output_dir):
     version_os = split.apply(lambda parts: pd.Series(parts[1:3], index=["version", "os"]))
     df = pd.concat([df, version_os], axis="columns")
     # version
-    df["version"] = split.apply(lambda parts: parts[1].split("-")[0])
+    df["version"] = split.apply(lambda parts: _extract_major_minor_version(parts[1].split("-")[0]))
     # operating system
     df["os"] = split.apply(lambda parts: parts[2])
     df = df.loc[df.os.isin(["macos", "linux", "windows"])]
@@ -55,5 +56,11 @@ def _render_vis(stats_loc, output_dir):
     vis_loc = vis_dir / stats_loc.with_suffix(".png").name
     fg.savefig(vis_loc)
 
+def _extract_major_minor_version(version):
+    version = packaging.version.parse(version)
+    version = packaging.version.parse(f"{version.major}.{version.minor}")
+    return version
+
+    
 if __name__ == '__main__':
     update_vis()

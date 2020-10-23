@@ -1,3 +1,4 @@
+packaging
 github-download-count
 pandas
 pyarrow
