@@ -8,6 +8,7 @@ import seaborn as sns
 
 sns.set_theme(style="whitegrid")
 
+
 @click.command()
 @click.argument("statistics", type=click.Path(exists=True))
 @click.option(
@@ -16,12 +17,13 @@ sns.set_theme(style="whitegrid")
     "output_dir",
     type=click.Path(),
     default="visualizations",
-    show_default=True
+    show_default=True,
 )
 def update_vis(statistics, output_dir):
     statistics_dir = pathlib.Path(statistics)
     for stats_loc in statistics_dir.glob("pupil.parquet"):
         _render_vis(stats_loc, output_dir)
+
 
 def _render_vis(stats_loc, output_dir):
     df = pd.read_parquet(stats_loc)
@@ -29,10 +31,14 @@ def _render_vis(stats_loc, output_dir):
     # preprocess assets
     df = df.loc[df["asset"].str.startswith("pupil")]
     split = df["asset"].str.split("_")
-    version_os = split.apply(lambda parts: pd.Series(parts[1:3], index=["version", "os"]))
+    version_os = split.apply(
+        lambda parts: pd.Series(parts[1:3], index=["version", "os"])
+    )
     df = pd.concat([df, version_os], axis="columns")
     # version
-    df["version"] = split.apply(lambda parts: _extract_major_minor_version(parts[1].split("-")[0]))
+    df["version"] = split.apply(
+        lambda parts: _extract_major_minor_version(parts[1].split("-")[0])
+    )
     # operating system
     df["os"] = split.apply(lambda parts: parts[2])
     df = df.loc[df.os.isin(["macos", "linux", "windows"])]
@@ -58,19 +64,21 @@ def _render_vis(stats_loc, output_dir):
     vis_loc = vis_dir / stats_loc.with_suffix(".png").name
     fg.savefig(vis_loc)
 
+
 def _extract_major_minor_version(version):
     version = packaging.version.parse(version)
     version = packaging.version.parse(f"{version.major}.{version.minor}")
     return version
 
+
 def _set_date_formatter(facet_grid):
     for ax in facet_grid.axes:
         if ax.get_xlabel():
-            #set ticks every week
+            # set ticks every week
             ax.xaxis.set_major_locator(mdates.WeekdayLocator())
-            #set major ticks format
-            ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
+            # set major ticks format
+            ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %d"))
 
-    
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     update_vis()
