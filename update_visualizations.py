@@ -22,10 +22,27 @@ sns.set_theme(style="whitegrid")
 def update_vis(statistics, output_dir):
     statistics_dir = pathlib.Path(statistics)
     for stats_loc in statistics_dir.glob("pupil.parquet"):
-        _render_vis(stats_loc, output_dir)
+        _load_and_render(stats_loc, output_dir)
 
 
-def _render_vis(stats_loc, output_dir):
+def _load_and_render(stats_loc, output_dir):
+    df = _load(stats_loc)
+
+    sns.set_context("talk")
+
+    vis_dir = pathlib.Path(output_dir)
+    vis_dir.mkdir(exist_ok=True)
+
+    vis_name_all = stats_loc.with_suffix(".all.png").name
+    vis_loc_all = vis_dir / vis_name_all
+    _render_all(df, vis_loc_all, col_wrap=5)
+
+    vis_name_latest_3 = stats_loc.with_suffix(".latest-3.png").name
+    vis_loc_latest_3 = vis_dir / vis_name_latest_3
+    _render_latest_3(df, vis_loc_latest_3)
+
+
+def _load(stats_loc):
     df = pd.read_parquet(stats_loc)
 
     # preprocess assets
@@ -42,11 +59,13 @@ def _render_vis(stats_loc, output_dir):
     # operating system
     df["os"] = split.apply(lambda parts: parts[2])
     df = df.loc[df.os.isin(["macos", "linux", "windows"])]
+    return df
 
+
+def _render_all(df, vis_loc, col_wrap=None):
     col = "version"
     col_order = sorted(df[col].unique(), reverse=True)
 
-    sns.set_context("talk")
     fg = sns.relplot(
         kind="line",
         data=df,
@@ -55,14 +74,20 @@ def _render_vis(stats_loc, output_dir):
         hue="os",
         col=col,
         col_order=col_order,
-        col_wrap=5,
+        col_wrap=col_wrap,
     )
     _set_date_formatter(fg)
-
-    vis_dir = pathlib.Path(output_dir)
-    vis_dir.mkdir(exist_ok=True)
-    vis_loc = vis_dir / stats_loc.with_suffix(".png").name
     fg.savefig(vis_loc)
+
+
+def _render_latest_3(df, vis_loc):
+    col = "version"
+    col_order = sorted(df[col].unique(), reverse=True)
+    latest_3 = col_order[:3]
+
+    df = df.loc[df.version.isin(latest_3)]
+
+    _render_all(df, vis_loc)
 
 
 def _extract_major_minor_version(version):
@@ -72,7 +97,7 @@ def _extract_major_minor_version(version):
 
 
 def _set_date_formatter(facet_grid):
-    for ax in facet_grid.axes:
+    for ax in facet_grid.axes.flat:
         if ax.get_xlabel():
             # set ticks every week
             ax.xaxis.set_major_locator(mdates.WeekdayLocator())
