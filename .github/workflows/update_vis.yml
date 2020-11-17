@@ -7,6 +7,9 @@ on:
   push:
     branches:
       - main
+  schedule:
+    # Run at 08:00 am every day
+    - cron:  '10 8 * * *'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:     
