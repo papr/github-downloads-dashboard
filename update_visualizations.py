@@ -100,9 +100,10 @@ def _set_date_formatter(facet_grid):
     for ax in facet_grid.axes.flat:
         if ax.get_xlabel():
             # set ticks every week
-            ax.xaxis.set_major_locator(mdates.WeekdayLocator(byweekday=(mdates.MO,)))
+            monday_locator = mdates.WeekdayLocator(byweekday=(mdates.MO,))
+            ax.xaxis.set_major_locator(monday_locator)
             # set major ticks format
-            ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %d"))
+            ax.xaxis.set_major_formatter(mdates.AutoDateFormatter(monday_locator))
 
 
 if __name__ == "__main__":
