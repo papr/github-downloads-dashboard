@@ -104,7 +104,7 @@ def _set_date_formatter(facet_grid):
             ax.xaxis.set_major_locator(monday_locator)
             # set major ticks format
             ax.xaxis.set_major_formatter(mdates.AutoDateFormatter(monday_locator))
-
+            ax.set_xticklabels(ax.get_xticks(), rotation = 45)
 
 if __name__ == "__main__":
     update_vis()
