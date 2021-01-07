@@ -3,6 +3,7 @@ import pathlib
 
 import click
 import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
@@ -104,7 +105,7 @@ def _set_date_formatter(facet_grid):
             ax.xaxis.set_major_locator(monday_locator)
             # set major ticks format
             ax.xaxis.set_major_formatter(mdates.AutoDateFormatter(monday_locator))
-            ax.set_xticklabels(ax.get_xticklabels(), rotation = 90)
+            plt.setp(ax.get_xticklabels(), rotation=90)
 
 if __name__ == "__main__":
     update_vis()
