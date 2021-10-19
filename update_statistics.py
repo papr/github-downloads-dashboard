@@ -47,7 +47,7 @@ def _save_stats_to_parquet(stats_by_repo, output_dir):
         stats_loc = stats_dir / f"{repo}.parquet"
         if stats_loc.exists():
             prev_data = pd.read_parquet(stats_loc)
-            df = pd.concat([prev_data, df])
+            df = pd.concat([prev_data, df], ignore_index=True)
         df.to_parquet(stats_loc)
 
 
