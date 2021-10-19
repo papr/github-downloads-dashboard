@@ -1,7 +1,5 @@
-[![Update Statistics](https://github.com/papr/github-downloads-dashboard/actions/workflows/update_stats.yml/badge.svg)](https://github.com/papr/github-downloads-dashboard/actions/workflows/update_stats.yml) [![Update Visualizations](https://github.com/papr/github-downloads-dashboard/actions/workflows/update_vis.yml/badge.svg)](https://github.com/papr/github-downloads-dashboard/actions/workflows/update_vis.yml)
-
 # Github Downloads Dashboard
-![Update Dashboard](https://github.com/papr/github-downloads-dashboard/workflows/Update%20Dashboard/badge.svg?event=schedule)
+[![Update Statistics](https://github.com/papr/github-downloads-dashboard/actions/workflows/update_stats.yml/badge.svg)](https://github.com/papr/github-downloads-dashboard/actions/workflows/update_stats.yml) [![Update Visualizations](https://github.com/papr/github-downloads-dashboard/actions/workflows/update_vis.yml/badge.svg)](https://github.com/papr/github-downloads-dashboard/actions/workflows/update_vis.yml)
 
 ## Latest Release
 ![pupil statistics latest](visualizations/pupil.latest.png)
