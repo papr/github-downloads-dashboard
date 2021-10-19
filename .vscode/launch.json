@@ -1,0 +1,30 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug visualizations",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/update_visualizations.py",
+            "args": [
+                "${workspaceFolder}/statistics"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Debug getting statistics",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/update_statistics.py",
+            "args": [
+                "pupil-labs"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        }
+    ]
+}
