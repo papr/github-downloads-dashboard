@@ -2,12 +2,11 @@ import packaging.version
 import pathlib
 
 import click
+import matplotlib
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-
-sns.set_theme(style="whitegrid")
 
 
 @click.command()
@@ -40,7 +39,11 @@ def _load_and_render(stats_loc, output_dir):
 
     vis_name_latest_3 = stats_loc.with_suffix(".latest-3.png").name
     vis_loc_latest_3 = vis_dir / vis_name_latest_3
-    _render_latest_3(df, vis_loc_latest_3)
+    _render_latest_n(df, 3, vis_loc_latest_3)
+
+    vis_name_latest = stats_loc.with_suffix(".latest.png").name
+    vis_loc_latest = vis_dir / vis_name_latest
+    _render_latest_n(df, 1, vis_loc_latest, use_weekday_labels=True, aspect=3)
 
 
 def _load(stats_loc):
@@ -63,7 +66,7 @@ def _load(stats_loc):
     return df
 
 
-def _render_all(df, vis_loc, col_wrap=None):
+def _render_all(df, vis_loc, *, use_weekday_labels=False, **kwargs):
     col = "version"
     col_order = sorted(df[col].unique(), reverse=True)
 
@@ -75,20 +78,20 @@ def _render_all(df, vis_loc, col_wrap=None):
         hue="os",
         col=col,
         col_order=col_order,
-        col_wrap=col_wrap,
+        **kwargs,
     )
-    _set_date_formatter(fg)
+    _set_date_formatter(fg, use_weekday_labels=use_weekday_labels)
     fg.savefig(vis_loc)
 
 
-def _render_latest_3(df, vis_loc):
+def _render_latest_n(df, n, *args, **kwargs):
     col = "version"
     col_order = sorted(df[col].unique(), reverse=True)
-    latest_3 = col_order[:3]
+    latest_n = col_order[:n]
 
-    df = df.loc[df.version.isin(latest_3)]
+    df = df.loc[df.version.isin(latest_n)]
 
-    _render_all(df, vis_loc)
+    _render_all(df, *args, **kwargs)
 
 
 def _extract_major_minor_version(version):
@@ -97,15 +100,19 @@ def _extract_major_minor_version(version):
     return version
 
 
-def _set_date_formatter(facet_grid):
+def _set_date_formatter(facet_grid, use_weekday_labels):
     for ax in facet_grid.axes.flat:
         if ax.get_xlabel():
-            # set ticks every week
-            monday_locator = mdates.WeekdayLocator(byweekday=(mdates.MO,))
-            ax.xaxis.set_major_locator(monday_locator)
-            # set major ticks format
-            ax.xaxis.set_major_formatter(mdates.AutoDateFormatter(monday_locator))
+            print(f"{use_weekday_labels=}")
+            if use_weekday_labels:
+                # set ticks every Monday
+                monday_locator = mdates.WeekdayLocator(byweekday=(mdates.MO,))
+                ax.xaxis.set_major_locator(monday_locator)
+                ax.xaxis.set_major_formatter(mdates.AutoDateFormatter(monday_locator))
             plt.setp(ax.get_xticklabels(), rotation=90)
 
+
 if __name__ == "__main__":
+    matplotlib.use("agg")
+    sns.set_theme(style="whitegrid")
     update_vis()
