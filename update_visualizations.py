@@ -63,12 +63,14 @@ def _load(stats_loc):
     # operating system
     df["os"] = split.apply(lambda parts: parts[2])
     df = df.loc[df.os.isin(["macos", "linux", "windows"])]
+
+    df.set_index(["date", "version", "os"], inplace=True)
     return df
 
 
 def _render_all(df, vis_loc, *, use_weekday_labels=False, **kwargs):
     col = "version"
-    col_order = sorted(df[col].unique(), reverse=True)
+    col_order = sorted(df.index.get_level_values(col).unique(), reverse=True)
 
     fg = sns.relplot(
         kind="line",
@@ -86,10 +88,10 @@ def _render_all(df, vis_loc, *, use_weekday_labels=False, **kwargs):
 
 def _render_latest_n(df, n, *args, **kwargs):
     col = "version"
-    col_order = sorted(df[col].unique(), reverse=True)
+    col_order = sorted(df.index.get_level_values("version").unique(), reverse=True)
     latest_n = col_order[:n]
 
-    df = df.loc[df.version.isin(latest_n)]
+    df = df.loc[:, latest_n, :]
 
     _render_all(df, *args, **kwargs)
 
