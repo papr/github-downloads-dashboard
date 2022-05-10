@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
+dl_per_day_7d_avg_label = "Downloads per day (7-day average)"
+
 
 @click.command()
 @click.argument("statistics", type=click.Path(exists=True))
@@ -65,6 +67,14 @@ def _load(stats_loc):
     df = df.loc[df.os.isin(["macos", "linux", "windows"])]
 
     df.set_index(["date", "version", "os"], inplace=True)
+    df["download_count_diff"] = df.groupby(["version", "os"]).download_count.diff()
+
+    df[dl_per_day_7d_avg_label] = float("nan")
+    for key, group in df.groupby(["version", "os"]):
+        df.loc[
+            group.index, dl_per_day_7d_avg_label
+        ] = group.download_count_diff.rolling("7D", on=group.index.levels[0]).mean()
+
     return df
 
 
@@ -78,8 +88,9 @@ def _render_all(df, vis_loc, *, use_weekday_labels=False, **kwargs):
         kind="line",
         data=df,
         x="date",
-        y="download_count",
-        hue="os",
+        y=dl_per_day_7d_avg_label,
+        hue=hue,
+        hue_order=hue_order,
         col=col,
         col_order=col_order,
         **kwargs,
