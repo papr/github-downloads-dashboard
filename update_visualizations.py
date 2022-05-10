@@ -103,7 +103,6 @@ def _extract_major_minor_version(version):
 def _set_date_formatter(facet_grid, use_weekday_labels):
     for ax in facet_grid.axes.flat:
         if ax.get_xlabel():
-            print(f"{use_weekday_labels=}")
             if use_weekday_labels:
                 # set ticks every Monday
                 monday_locator = mdates.WeekdayLocator(byweekday=(mdates.MO,))
