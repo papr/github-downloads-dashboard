@@ -71,6 +71,8 @@ def _load(stats_loc):
 def _render_all(df, vis_loc, *, use_weekday_labels=False, **kwargs):
     col = "version"
     col_order = sorted(df.index.get_level_values(col).unique(), reverse=True)
+    hue = "os"
+    hue_order = sorted(df.index.get_level_values(hue).unique())
 
     fg = sns.relplot(
         kind="line",
